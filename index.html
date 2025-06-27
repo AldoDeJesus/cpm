@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirmación</title>
+  <style>
+    :root {
+      --bg: #fef9e7;
+      --accent: #f4c542;
+      --accent-dark: #d4a019;
+      --bubble: #ffffff;
+      --bubble-border: #000000;
+      --text: #333333;
+      --success: #76c893;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, var(--bg), #fff9d9);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .character-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: bounce 2s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .monkey {
+      width: 150px;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.1));
+    }
+
+    .bubble {
+      background: var(--bubble);
+      border: 2px solid var(--bubble-border);
+      border-radius: 20px;
+      padding: 16px 20px;
+      min-width: 250px;
+      max-width: 300px;
+      min-height: 60px;
+      font-size: 16px;
+      line-height: 1.4;
+      color: var(--text);
+      position: absolute;
+      top: -130px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 10px solid transparent;
+      border-top-color: var(--bubble);
+    }
+
+    .next-button {
+      margin-top: 12px;
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      box-shadow: 0 4px 10px rgba(244, 197, 66, 0.4);
+    }
+
+    .next-button:hover {
+      background-color: var(--accent-dark);
+    }
+
+    .buttons {
+      margin-top: 30px;
+      display: none;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .buttons button {
+      background-color: var(--success);
+      color: white;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 14px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(118, 200, 147, 0.4);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .buttons button:hover {
+      background-color: #60b681;
+    }
+
+    .buttons button:active {
+      transform: scale(0.97);
+    }
+
+    .emoji-rain {
+      position: absolute;
+      font-size: 30px;
+      animation: fall linear forwards;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-60px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 450px) {
+      .bubble {
+        font-size: 15px;
+        max-width: 90vw;
+      }
+
+      .monkey {
+        width: 120px;
+      }
+
+      .buttons button {
+        font-size: 14px;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="character-container">
+    <div class="bubble">
+      <span id="bubble-text"></span>
+    </div>
+    <img class="monkey"
+      src="penguin.gif"
+      alt="Changuito animado" />
+    <button class="next-button" onclick="nextDialogue()" id="nextBtn">Siguiente</button>
+  </div>
+
+  <div class="buttons" id="response-buttons">
+    <button onclick="responder('Sí')">✅ Sí</button>
+    <button onclick="responder('No')">❌ No</button>
+  </div>
+
+  <script>
+    const frases = [
+      "¡Hola conta!",
+      "¿Está ahí?",
+      "Vengo por una respuesta",
+      "solo elige una opción",
+    ];
+
+    let currentIndex = 0;
+    const bubbleText = document.getElementById("bubble-text");
+    const buttons = document.getElementById("response-buttons");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function nextDialogue() {
+      if (currentIndex < frases.length) {
+        bubbleText.textContent = frases[currentIndex];
+        currentIndex++;
+        if (currentIndex === frases.length) {
+          nextBtn.style.display = "none";
+          buttons.style.display = "flex";
+        }
+      }
+    }
+
+    function responder(resp) {
+      bubbleText.textContent = resp === "Sí"
+        ? "Ya queda conta, yo invito la primera taza ☕"
+        : "Le tuviste miedo al éxito, la verdad 🐵 jajaja";
+
+      startEmojiRain();
+    }
+
+    function startEmojiRain() {
+      const emojis = ["🐵", "🙉", "🙊", "🍌"];
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => createEmoji(emojis[Math.floor(Math.random() * emojis.length)]), i * 100);
+      }
+    }
+
+    function createEmoji(emoji) {
+      const el = document.createElement("span");
+      el.classList.add("emoji-rain");
+      el.textContent = emoji;
+
+      el.style.left = `${Math.random() * 100}vw`;
+      el.style.animationDuration = `${2 + Math.random() * 2}s`;
+
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 5000);
+    }
+
+    // Mostrar primera frase
+    window.onload = () => nextDialogue();
+  </script>
+
+</body>
+</html>
